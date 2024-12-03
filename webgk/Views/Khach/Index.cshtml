@@ -1,0 +1,144 @@
+﻿@{
+    ViewData["Title"] = "Danh sách khách hàng";
+}
+
+<h2>Danh sách khách hàng</h2>
+<div>
+    <button class="btn btn-success btn-sm" id="customer-add">Thêm mới khách hàng</button>
+    <div class="input-group mb-3" style="max-width: 400px;">
+        <form onsubmit="event.preventDefault(); searchCustomers();">
+            <input type="text" class="form-control" placeholder="Tìm kiếm khách hàng..." id="search-input">
+            <div class="input-group-append">
+                <button class="btn btn-primary" type="submit">Tìm kiếm</button>
+            </div>
+        </form>
+    </div>
+    <div class="dropdown d-inline">
+        <button class="btn btn-primary btn-sm dropdown-toggle" type="button" id="sort-dropdown" data-bs-toggle="dropdown" aria-expanded="false">
+            Sắp xếp
+        </button>
+        <ul class="dropdown-menu" aria-labelledby="sort-dropdown">
+            <li><a class="dropdown-item" href="#" id="sort-name">Theo tên</a></li>
+        </ul>
+    </div>
+</div>
+<div id="customer-list">
+    <table class="table table-bordered table-hover mb-0">
+        <thead>
+            <tr>
+                <th>Mã khách</th>
+                <th>Tên khách hàng</th>
+                <th>Địa chỉ</th>
+                <th>Số điện thoại</th>
+                <th>Email</th>
+                <th>Hành động</th>
+            </tr>
+        </thead>
+        <tbody id="customer-list-body"></tbody>
+    </table>
+</div>
+
+<style>
+    table th,
+    table td {
+        text-align: center;
+        vertical-align: middle;
+    }
+</style>
+
+<script>
+    let customers = [];
+
+    fetch('/api/KhachApi')
+        .then(response => response.json())
+        .then(data => {
+            customers = data;
+            displayCustomers(customers);
+        })
+        .catch(error => console.error('Error:', error));
+
+    function displayCustomers(customers) {
+        const customerListContainer = document.getElementById('customer-list-body');
+        customerListContainer.innerHTML = '';
+        customers.forEach(customer => {
+            if (customer && customer.maKhach && customer.tenKhach) {
+                const customerItem = document.createElement('tr');
+                customerItem.innerHTML = `
+                            <td>${customer.maKhach}</td>
+                            <td>${customer.tenKhach}</td>
+                            <td>${customer.diaChi || ''}</td>
+                            <td>${customer.sdt || ''}</td>
+                            <td>${customer.email || ''}</td>
+                            <td>
+                                <button class="btn btn-warning btn-sm" onclick="editCustomer('${customer.maKhach}')">Chỉnh sửa</button>
+                                <button class="btn btn-danger btn-sm" onclick="deleteCustomer('${customer.maKhach}')">Xóa</button>
+                            </td>
+                        `;
+                customerListContainer.appendChild(customerItem);
+            } else {
+                console.error('Invalid customer data:', customer);
+            }
+        });
+    }
+
+    document.getElementById('customer-add').addEventListener('click', function () {
+        window.location.href = '/Khach/ThemMoi';
+    });
+
+    function editCustomer(id) {
+        window.location.href = `/Khach/ChinhSua/${id}`;
+    }
+
+    function deleteCustomer(id) {
+        if (confirm('Bạn có chắc chắn muốn xóa khách hàng này?')) {
+            fetch(`/api/KhachApi/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+                .then(response => {
+                    if (response.ok) {
+                        alert('Khách hàng đã được xóa thành công!');
+                        window.location.reload();
+                    } else {
+                        alert('Không thể xóa khách hàng này.');
+                    }
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                });
+        }
+    }
+
+    // Sort by name
+    document.getElementById('sort-name').addEventListener('click', function () {
+        customers.sort((a, b) => {
+            if (a.tenKhach < b.tenKhach) return -1;
+            if (a.tenKhach > b.tenKhach) return 1;
+            return 0;
+        });
+        displayCustomers(customers);
+    });
+
+    // Search customers
+    function searchCustomers() {
+        const searchTerm = document.getElementById('search-input').value.toLowerCase();
+        const filteredCustomers = customers.filter(customer =>
+            customer.tenKhach.toLowerCase().includes(searchTerm) ||
+            customer.diaChi.toLowerCase().includes(searchTerm) ||
+            customer.sdt.toLowerCase().includes(searchTerm) ||
+            customer.email.toLowerCase().includes(searchTerm)
+        );
+        displayCustomers(filteredCustomers);
+    }
+
+    document.getElementById('search-input').addEventListener('keypress', function (event) {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            searchCustomers();
+        }
+    });
+
+    document.getElementById('search-button').addEventListener('click', searchCustomers);
+</script>

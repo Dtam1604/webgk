@@ -1,0 +1,73 @@
+﻿@model webgk.Models.DonHang
+
+@{
+    ViewBag.Title = "Chi tiết đơn hàng";
+}
+
+<div class="container-fluid pt-4 px-4">
+    <div class="bg-light text-center rounded p-4">
+        <div class="d-flex align-items-center justify-content-between mb-4">
+            <h6 class="mb-0">Chi tiết đơn hàng - @Model?.MaDon</h6>
+            <a href="@Url.Action("Index", "DonHang")">Quay lại danh sách</a>
+        </div>
+        <div class="row">
+            <div class="col-lg-6">
+                <h5>Thông tin đơn hàng</h5>
+                <table class="table table-bordered">
+                    <tbody>
+                        <tr>
+                            <th scope="row">Mã đơn hàng</th>
+                            <td>@Model?.MaDon</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Ngày bán</th>
+                            <td>@Model?.NgayBan</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Tổng tiền</th>
+                            <td>@Model?.TongTien</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Trạng thái</th>
+                            <td>@Model?.TrangThaiDH</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-lg-6">
+                <h5>Thông tin khách hàng</h5>
+                <table class="table table-bordered">
+                    <tbody>
+                        <tr>
+                            <th scope="row">Mã khách hàng</th>
+                            <td>@Model?.MaKhach</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12">
+                <h5>Chi tiết sản phẩm</h5>
+                <div class="table-responsive">
+                    <table class="table text-start align-middle table-bordered table-hover mb-0">
+                        <thead>
+                            <tr class="text-dark">
+                                <th scope="col">ID sản phẩm</th>
+                                <th scope="col">Số lượng</th>
+                                <th scope="col">Tổng</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>@Model?.ID</td>
+                                <td>@Model?.Quantity</td>
+                                <td>@Model?.TongTien</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

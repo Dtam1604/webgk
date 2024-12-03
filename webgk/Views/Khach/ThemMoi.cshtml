@@ -1,0 +1,59 @@
+﻿@{
+    ViewData["Title"] = "Thêm mới khách hàng";
+}
+
+<h2>Thêm mới khách hàng</h2>
+
+<div id="customer-create">
+    <form id="customer-form">
+        <div class="form-group">
+            <label for="ma-khach">Mã khách</label>
+            <input type="text" id="ma-khach" name="maKhach" class="form-control" required>
+        </div>
+        <div class="form-group">
+            <label for="ten-khach">Tên khách hàng</label>
+            <input type="text" id="ten-khach" name="tenKhach" class="form-control" required>
+        </div>
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" class="form-control" required>
+        </div>
+        <div class="form-group">
+            <label for="sdt">Số điện thoại</label>
+            <input type="text" id="sdt" name="sdt" class="form-control" required>
+        </div>
+        <div class="form-group">
+            <label for="dia-chi">Địa chỉ</label>
+            <input type="text" id="dia-chi" name="diaChi" class="form-control" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Thêm mới</button>
+    </form>
+</div>
+
+<script>
+    document.getElementById('customer-form').addEventListener('submit', function (event) {
+        event.preventDefault();
+
+        const customer = {
+            maKhach: document.getElementById('ma-khach').value,
+            tenKhach: document.getElementById('ten-khach').value,
+            email: document.getElementById('email').value,
+            sdt: document.getElementById('sdt').value,
+            diaChi: document.getElementById('dia-chi').value
+        };
+
+        fetch('/api/KhachApi', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(customer)
+        })
+            .then(response => response.json())
+            .then(data => {
+                alert('Khách hàng đã được thêm mới thành công!');
+                window.location.href = '/Khach/Index'; // Chuyển hướng về trang danh sách khách hàng
+            })
+            .catch(error => console.error('Error:', error));
+    });
+</script>

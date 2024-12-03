@@ -1,0 +1,103 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<!-- Sale & Revenue Start -->
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success"> @TempData["SuccessMessage"] </div>
+} <div class="container">
+    <div class="row">
+        <div class="col-12 text-center my-5">
+            <h1>Chào mừng bạn đến với hệ thống quản lý bán hàng</h1>
+            <p class="lead">Đây là trang chủ của hệ thống, nơi bạn có thể quản lý thông tin sản phẩm, nhân viên và các hoạt động kinh doanh khác.</p>
+<div class="container-fluid pt-4 px-4">
+    <div class="row g-4">
+        <div class="col-sm-6 col-xl-3">
+            <div class="bg-light rounded d-flex align-items-center justify-content-between p-4">
+                <i class="fa fa-chart-line fa-3x text-primary"></i>
+                <div class="ms-3">
+                    <p class="mb-2">Bán hàng hôm nay</p>
+                    <h6 class="mb-0">@ViewBag.TodaySales</h6>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-xl-3">
+            <div class="bg-light rounded d-flex align-items-center justify-content-between p-4">
+                <i class="fa fa-chart-bar fa-3x text-primary"></i>
+                <div class="ms-3">
+                    <p class="mb-2">Tổng số đơn hàng</p>
+                    <h6 class="mb-0">@ViewBag.TotalOrders</h6>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-xl-3">
+            <div class="bg-light rounded d-flex align-items-center justify-content-between p-4">
+                <i class="fa fa-chart-area fa-3x text-primary"></i>
+                <div class="ms-3">
+                    <p class="mb-2">Doanh thu hôm nay</p>
+                    <h6 class="mb-0">@ViewBag.TodayRevenue.ToString("C")</h6>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-xl-3">
+            <div class="bg-light rounded d-flex align-items-center justify-content-between p-4">
+                <i class="fa fa-chart-pie fa-3x text-primary"></i>
+                <div class="ms-3">
+                    <p class="mb-2">Tổng doanh thu</p>
+                    <h6 class="mb-0">@ViewBag.TotalRevenue.ToString("C")</h6>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Sale & Revenue End -->
+<!-- Recent Sales Start -->
+<div class="container-fluid pt-4 px-4">
+    <div class="bg-light text-center rounded p-4">
+        <div class="d-flex align-items-center justify-content-between mb-4">
+            <h6 class="mb-0">Đơn hàng gần đây</h6>
+          
+        </div>
+        <div class="table-responsive">
+            <table class="table text-start align-middle table-bordered table-hover mb-0">
+                <thead>
+                    <tr class="text-dark">
+                        <th scope="col"><input class="form-check-input" type="checkbox"></th>
+                        <th scope="col" onclick="sortTable(1)">Ngày bán</th>
+                        <th scope="col" onclick="sortTable(2)">Mã đơn</th>
+                        <th scope="col" onclick="sortTable(3)">Mã khách hàng</th>
+                        <th scope="col" onclick="sortTable(4)">Tổng tiền</th>
+                        <th scope="col" onclick="sortTable(5)">Trạng thái</th>
+                        <th scope="col">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Count > 0)
+                    {
+                        foreach (var item in Model)
+                        {
+                            <tr>
+                                <td><input class="form-check-input" type="checkbox"></td>
+                                <td>@item.NgayBan.ToString("dd MMM yyyy")</td>
+                                <td>@item.MaDon</td>
+                                <td>@item.MaKhach</td>
+                                <td>@item.TongTien.ToString("C")</td>
+                                <td>@item.TrangThaiDH</td>
+                                <td><a class="btn btn-sm btn-primary" href="@Url.Action("Details","DonHang", new { id = item.MaDon })">Chi tiết</a></td>
+                            </tr>
+                        }
+                    }
+                    
+                    else
+                    {
+                        <tr>
+                            <td colspan="7" class="text-center">Không có đơn hàng nào</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<!-- Recent Sales End -->

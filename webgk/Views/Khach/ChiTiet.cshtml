@@ -1,0 +1,49 @@
+﻿@{
+    ViewData["Title"] = "Chi tiết khách hàng";
+}
+
+<h2>Chi tiết khách hàng</h2>
+<div>
+    <button class="btn btn-secondary btn-sm" onclick="goBack()">Trở về danh sách</button>
+</div>
+
+<div id="customer-details">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Tên khách hàng</th
+                <th>Địa chỉ</th>
+                <th>Email</th>
+                <th>Số điện thoại</th>
+            </tr>
+        </thead>
+        <tbody id="customer-details-body"></tbody>
+    </table>
+</div>
+
+<script>
+    const customerId = new URLSearchParams(window.location.search).get('id');
+
+    if (customerId) {
+        fetch(`/api/KhachApi/${customerId}`)
+            .then(response => response.json())
+            .then(data => {
+                const customerDetailsContainer = document.getElementById('customer-details-body');
+                customerDetailsContainer.innerHTML = `
+                    <tr>
+                        <td>${data.maKhach}</td>
+                        <td>${data.tenKhach}</td>
+                        <td>${data.diaChi}</td>
+                        <td>${data.email}</td>
+                        <td>${data.sdt}</td>
+                    </tr>
+                    `;
+            })
+            .catch(error => console.error('Error:', error));
+    }
+
+    function goBack() {
+        window.history.back();
+    }
+</script>

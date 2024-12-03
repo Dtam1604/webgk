@@ -1,0 +1,67 @@
+﻿@{
+    ViewData["Title"] = "Tạo mới sản phẩm";
+}
+
+<h2>Tạo mới sản phẩm</h2>
+
+<div>
+    <button class="btn btn-secondary btn-sm" onclick="goBack()">Trở về danh sách</button>
+</div>
+
+<div id="san-pham-create">
+    <form id="product-form">
+        <div class="form-group">
+            <label for="product-name">Tên SP</label>
+            <input type="text" id="product-name" class="form-control" required>
+        </div>
+        <div class="form-group">
+            <label for="product-gianhap">Giá Nhập</label>
+            <input type="number" id="product-gianhap" class="form-control" required>
+        </div>
+        <div class="form-group">
+            <label for="product-giaban">Giá Bán</label>
+            <input type="number" id="product-giaban" class="form-control" required>
+        </div>
+        <div class="form-group">
+            <label for="product-soluong">Số lượng</label>
+            <input type="number" id="product-soluong" class="form-control" required>
+        </div>
+        <div class="form-group">
+            <label for="product-loaisp">Loại SP</label>
+            <input type="text" id="product-loaisp" class="form-control" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Tạo mới</button>
+    </form>
+</div>
+
+<script>
+    document.getElementById('product-form').addEventListener('submit', function (event) {
+        event.preventDefault();
+
+        const product = {
+            tenSP: document.getElementById('product-name').value,
+            giaNhap: document.getElementById('product-gianhap').value,
+            giaBan: document.getElementById('product-giaban').value,
+            soluong: document.getElementById('product-soluong').value,
+            loaiSP: document.getElementById('product-loaisp').value
+        };
+
+        fetch('/api/SanPhamApi', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(product)
+        })
+            .then(response => response.json())
+            .then(data => {
+                alert('Sản phẩm đã được tạo mới thành công!');
+                window.location.href = '/SanPham/Index';
+            })
+            .catch(error => console.error('Error:', error));
+    });
+
+    function goBack() {
+        window.history.back();
+    }
+</script>

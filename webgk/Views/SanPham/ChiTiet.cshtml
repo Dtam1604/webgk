@@ -1,0 +1,82 @@
+﻿@{
+    ViewData["Title"] = "Chi tiết sản phẩm";
+}
+
+<h2>Chi tiết sản phẩm</h2>
+<div>
+    <button class="btn btn-secondary btn-sm" onclick="closeForm()">Trở về danh sách</button>
+</div>
+
+<div id="detailSanPhamForm">
+    <div class="form-group">
+        <label for="ID">ID</label>
+        <input type="text" id="ID" name="ID" class="form-control" required readonly>
+        <span class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label for="TenSP">Tên SP</label>
+        <input type="text" id="TenSP" name="TenSP" class="form-control" required readonly>
+        <span class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label for="GiaNhap">Giá Nhập</label>
+        <input type="number" id="GiaNhap" name="GiaNhap" class="form-control" required readonly>
+        <span class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label for="GiaBan">Giá Bán</label>
+        <input type="number" id="GiaBan" name="GiaBan" class="form-control" required readonly>
+        <span class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label for="Soluong">Số lượng</label>
+        <input type="number" id="Soluong" name="Soluong" class="form-control" required readonly>
+        <span class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label for="LoaiSP">Loại SP</label>
+        <input type="text" id="LoaiSP" name="LoaiSP" class="form-control" required readonly>
+        <span class="text-danger"></span>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const pathArray = window.location.pathname.split('/');
+        const id = pathArray[pathArray.length - 1];
+
+        // Check if 'id' is correctly retrieved
+        if (!id) {
+            console.error('Error: Missing or invalid "id" parameter in URL');
+            return;
+        }
+
+        fetch(`/api/SanPhamApi/${id}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                document.getElementById('ID').value = data.id;
+                document.getElementById('TenSP').value = data.tenSP;
+                document.getElementById('GiaNhap').value = data.giaNhap;
+                document.getElementById('GiaBan').value = data.giaBan;
+                document.getElementById('Soluong').value = data.soluong;
+                document.getElementById('LoaiSP').value = data.loaiSP;
+                console.log('Success:', data);
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+    });
+    function closeForm() {
+        window.location.href = '/SanPham/Index';
+    }
+</script>

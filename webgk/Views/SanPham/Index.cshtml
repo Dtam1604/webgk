@@ -1,0 +1,148 @@
+﻿@{
+    ViewData["Title"] = "Danh sách sản phẩm";
+}
+
+<h2>Danh sách sản phẩm</h2>
+<div>
+    <button class="btn btn-success btn-sm" id="san-pham-add">Thêm mới</button>
+    <div class="input-group mb-3" style="max-width: 400px;">
+        <form onsubmit="event.preventDefault(); searchProducts();">
+            <input type="text" class="form-control" placeholder="Tìm kiếm sản phẩm..." id="search-input">
+            <div class="input-group-append">
+                <button class="btn btn-primary" type="submit">Tìm kiếm</button>
+            </div>
+        </form>
+    </div>
+    <div class="dropdown d-inline">
+        <button class="btn btn-primary btn-sm dropdown-toggle" type="button" id="sort-dropdown" data-bs-toggle="dropdown" aria-expanded="false">
+            Sắp xếp
+        </button>
+        <ul class="dropdown-menu" aria-labelledby="sort-dropdown">
+            <li><a class="dropdown-item" href="#" id="sort-price">Theo giá bán</a></li>
+            <li><a class="dropdown-item" href="#" id="sort-quantity">Theo số lượng</a></li>
+        </ul>
+    </div>
+</div>
+<div id="san-pham-list">
+    <table class="table table-bordered table-hover mb-0">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Tên SP</th>
+                <th>Giá Nhập</th>
+                <th>Giá Bán</th>
+                <th>Số lượng</th>
+                <th>Loại SP</th>
+                <th>Hành động</th>
+            </tr>
+        </thead>
+        <tbody id="san-pham-list-body"></tbody>
+    </table>
+</div>
+
+<style>
+    table th, table td {
+        text-align: center;
+        vertical-align: middle;
+    }
+</style>
+
+<script>
+    let sanPhams = [];
+
+    fetch('/api/SanPhamApi')
+        .then(response => response.json())
+        .then(data => {
+            sanPhams = data;
+            displayProducts(sanPhams);
+        })
+        .catch(error => console.error('Error:', error));
+
+    function displayProducts(products) {
+        const sanPhamListContainer = document.getElementById('san-pham-list-body');
+        sanPhamListContainer.innerHTML = '';
+        products.forEach(sanPham => {
+            const sanPhamItem = document.createElement('tr');
+            sanPhamItem.innerHTML = `
+                    <td>${sanPham.id}</td>
+                    <td>${sanPham.tenSP}</td>
+                    <td>${sanPham.giaNhap}</td>
+                    <td>${sanPham.giaBan}</td>
+                    <td>${sanPham.soluong}</td>
+                    <td>${sanPham.loaiSP}</td>
+                    <td>
+                        <button class="btn btn-info btn-sm" onclick="viewDetail(${sanPham.id})">Xem chi tiết</button>
+                        <button class="btn btn-warning btn-sm" onclick="editSanPham(${sanPham.id})">Chỉnh sửa</button>
+                        <button class="btn btn-danger btn-sm" onclick="deleteSanPham(${sanPham.id})">Xóa</button>
+                    </td>
+                    `;
+            sanPhamListContainer.appendChild(sanPhamItem);
+        });
+    }
+
+    document.getElementById('san-pham-add').addEventListener('click', function () {
+        window.location.href = '/SanPham/ThemMoi';
+    });
+
+    function viewDetail(id) {
+        window.location.href = `/SanPham/ChiTiet/${id}`;
+    }
+
+    function editSanPham(id) {
+        window.location.href = `/SanPham/ChinhSua/${id}`;
+    }
+
+    function deleteSanPham(id) {
+        if (confirm('Bạn có chắc chắn muốn xóa sản phẩm này?')) {
+            fetch(`/api/SanPhamApi/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.message === 'Delete successful') {
+                        alert('Sản phẩm đã được xóa thành công!');
+                        window.location.reload();
+                    } else {
+                        alert('Không thể xóa sản phẩm này. ' + data.error);
+                    }
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                });
+        }
+    }
+
+    // Sắp xếp theo giá bán
+    document.getElementById('sort-price').addEventListener('click', function () {
+        sanPhams.sort((a, b) => a.giaBan - b.giaBan);
+        displayProducts(sanPhams);
+    });
+
+    // Sắp xếp theo số lượng
+    document.getElementById('sort-quantity').addEventListener('click', function () {
+        sanPhams.sort((a, b) => a.soluong - b.soluong);
+        displayProducts(sanPhams);
+    });
+
+    // Tìm kiếm sản phẩm
+    function searchProducts() {
+        const searchTerm = document.getElementById('search-input').value.toLowerCase();
+        const filteredProducts = sanPhams.filter(sanPham =>
+            sanPham.tenSP.toLowerCase().includes(searchTerm) ||
+            sanPham.loaiSP.toLowerCase().includes(searchTerm)
+        );
+        displayProducts(filteredProducts);
+    }
+
+    document.getElementById('search-input').addEventListener('keypress', function (event) {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            searchProducts();
+        }
+    });
+
+    document.getElementById('search-button').addEventListener('click', searchProducts);
+</script>
