@@ -13,25 +13,29 @@
             </div>
         </form>
     </div>
-    <div class="dropdown d-inline">
-        <button class="btn btn-primary btn-sm dropdown-toggle" type="button" id="sort-dropdown" data-bs-toggle="dropdown" aria-expanded="false">
-            Sắp xếp
-        </button>
-        <ul class="dropdown-menu" aria-labelledby="sort-dropdown">
-            <li><a class="dropdown-item" href="#" id="sort-price">Theo giá bán</a></li>
-            <li><a class="dropdown-item" href="#" id="sort-quantity">Theo số lượng</a></li>
-        </ul>
-    </div>
+   
 </div>
 <div id="san-pham-list">
     <table class="table table-bordered table-hover mb-0">
         <thead>
             <tr>
                 <th>ID</th>
-                <th>Tên SP</th>
+                <th>
+                    Tên SP
+                    <button class="btn btn-success btn-sm" onclick="sort('tenSP', 'asc')">↓</button>
+                    <button class="btn btn-success btn-sm" onclick="sort('tenSP', 'des')">↑</button>
+                </th>
                 <th>Giá Nhập</th>
-                <th>Giá Bán</th>
-                <th>Số lượng</th>
+                <th>
+                    Giá Bán
+                    <button class="btn btn-success btn-sm" onclick="sort('giaBan', 'asc')">↓</button>
+                    <button class="btn btn-success btn-sm" onclick="sort('giaBan', 'des')">↑</button>
+                </th>
+                <th>
+                    Số lượng
+                    <button class="btn btn-success btn-sm" onclick="sort('soluong', 'asc')">↓</button>
+                    <button class="btn btn-success btn-sm" onclick="sort('soluong', 'des')">↑</button>
+                </th>
                 <th>Loại SP</th>
                 <th>Hành động</th>
             </tr>
@@ -75,7 +79,7 @@
                         <button class="btn btn-warning btn-sm" onclick="editSanPham(${sanPham.id})">Chỉnh sửa</button>
                         <button class="btn btn-danger btn-sm" onclick="deleteSanPham(${sanPham.id})">Xóa</button>
                     </td>
-                    `;
+                `;
             sanPhamListContainer.appendChild(sanPhamItem);
         });
     }
@@ -115,17 +119,24 @@
         }
     }
 
-    // Sắp xếp theo giá bán
-    document.getElementById('sort-price').addEventListener('click', function () {
-        sanPhams.sort((a, b) => a.giaBan - b.giaBan);
+    function sort(sort_field, sort_type) {
+        sanPhams.sort((a, b) => {
+            if (typeof a[sort_field] === 'string') {
+                if (sort_type === "des") {
+                    return b[sort_field].toLowerCase().localeCompare(a[sort_field].toLowerCase());
+                } else {
+                    return a[sort_field].toLowerCase().localeCompare(b[sort_field].toLowerCase());
+                }
+            } else {
+                if (sort_type === "des") {
+                    return b[sort_field] - a[sort_field];
+                } else {
+                    return a[sort_field] - b[sort_field];
+                }
+            }
+        });
         displayProducts(sanPhams);
-    });
-
-    // Sắp xếp theo số lượng
-    document.getElementById('sort-quantity').addEventListener('click', function () {
-        sanPhams.sort((a, b) => a.soluong - b.soluong);
-        displayProducts(sanPhams);
-    });
+    }
 
     // Tìm kiếm sản phẩm
     function searchProducts() {

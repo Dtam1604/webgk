@@ -68,27 +68,25 @@ else
                 <table class="table text-start align-middle table-bordered table-hover mb-0" id="ordersTable">
                     <thead>
                         <tr class="text-dark">
-                            <th scope="col"><input class="form-check-input" type="checkbox"></th>
-                            <th scope="col" onclick="sortTable(1)">Ngày bán</th>
-                            <th scope="col" onclick="sortTable(2)">Mã đơn</th>
-                            <th scope="col" onclick="sortTable(3)">Mã khách hàng</th>
-                            <th scope="col" onclick="sortTable(4)">Tổng tiền</th>
-                            <th scope="col" onclick="sortTable(5)">Trạng thái</th>
+                            <th scope="col" onclick="sortTable('NgayBan')">Ngày bán</th>
+                            <th scope="col" onclick="sortTable('MaDon')">Mã đơn</th>
+                            <th scope="col" onclick="sortTable('MaKhach')">Mã khách hàng</th>
+                            <th scope="col" onclick="sortTable('TongTien')">Tổng tiền</th>
+                            <th scope="col">Trạng thái</th>
                             <th scope="col">Thao tác</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="ordersBody">
                         @if (Model != null && Model.Count() > 0)
                         {
                             foreach (var item in Model)
                             {
                                 <tr>
-                                    <td><input class="form-check-input" type="checkbox"></td>
-                                    <td>@item.NgayBan.ToString("dd MMM yyyy")</td>
-                                    <td>@item.MaDon</td>
-                                    <td>@item.MaKhach</td>
-                                    <td>@item.TongTien.ToString("C")</td>
-                                    <td>@item.TrangThaiDH</td>
+                                    <td data-field="NgayBan">@item.NgayBan.ToString("dd MMM yyyy")</td>
+                                    <td data-field="MaDon">@item.MaDon</td>
+                                    <td data-field="MaKhach">@item.MaKhach</td>
+                                    <td data-field="TongTien">@item.TongTien.ToString()</td>
+                                    <td data-field="TrangThaiDH">@item.TrangThaiDH</td>
                                     <td>
                                         <button class="btn btn-info btn-sm" onclick="viewDetail(@item.MaDon)">Chi tiết</button>
                                         <button class="btn btn-danger btn-sm" onclick="deleteDonHang(@item.MaDon)">Xóa</button>
@@ -99,7 +97,7 @@ else
                         else
                         {
                             <tr>
-                                <td colspan="7" class="text-center">Không có đơn hàng nào</td>
+                                <td colspan="6" class="text-center">Không có đơn hàng nào</td>
                             </tr>
                         }
                     </tbody>
@@ -110,6 +108,8 @@ else
 }
 
 <script>
+    let sortType = {};
+
     function searchOrders() {
         var input, filter, table, tr, td, i, j, txtValue;
         input = document.getElementById("searchInput");
@@ -132,44 +132,36 @@ else
         }
     }
 
-    function sortTable(n) {
-        var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
-        table = document.getElementById("ordersTable");
-        switching = true;
-        dir = "asc";
+    function sortTable(sortField) {
+        const table = document.getElementById('ordersTable');
+        const rows = Array.from(table.rows).slice(1); // Bỏ qua hàng tiêu đề
+        const isNumeric = !isNaN(rows[0].querySelector(`[data-field="${sortField}"]`).innerText);
 
-        while (switching) {
-            switching = false;
-            rows = table.rows;
-
-            for (i = 1; i < (rows.length - 1); i++) {
-                shouldSwitch = false;
-                x = rows[i].getElementsByTagName("TD")[n].innerText.toLowerCase();
-                y = rows[i + 1].getElementsByTagName("TD")[n].innerText.toLowerCase();
-
-                if (dir == "asc") {
-                    if (x > y) {
-                        shouldSwitch = true;
-                        break;
-                    }
-                } else if (dir == "desc") {
-                    if (x < y) {
-                        shouldSwitch = true;
-                        break;
-                    }
-                }
-            }
-            if (shouldSwitch) {
-                rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
-                switching = true;
-                switchcount++;
-            } else {
-                if (switchcount == 0 && dir == "asc") {
-                    dir = "desc";
-                    switching = true;
-                }
-            }
+        // Đặt kiểu sắp xếp mặc định nếu chưa có
+        if (!sortType[sortField]) {
+            sortType[sortField] = 'asc';
         }
+
+        rows.sort((a, b) => {
+            const aField = a.querySelector(`[data-field="${sortField}"]`).innerText.toLowerCase();
+            const bField = b.querySelector(`[data-field="${sortField}"]`).innerText.toLowerCase();
+
+            if (isNumeric) {
+                return sortType[sortField] === 'asc' ? aField - bField : bField - aField;
+            }
+
+            if (sortType[sortField] === 'asc') {
+                return aField.localeCompare(bField);
+            } else {
+                return bField.localeCompare(aField);
+            }
+        });
+
+        // Chuyển đổi kiểu sắp xếp cho lần sắp xếp tiếp theo
+        sortType[sortField] = sortType[sortField] === 'asc' ? 'des' : 'asc';
+
+        const tbody = table.querySelector('tbody');
+        rows.forEach(row => tbody.appendChild(row));
     }
 
     function viewDetail(id) {

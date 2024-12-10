@@ -10,7 +10,7 @@
     <div class="row">
         <div class="col-12 text-center my-5">
             <h1>Chào mừng bạn đến với hệ thống quản lý bán hàng</h1>
-            <p class="lead">Đây là trang chủ của hệ thống, nơi bạn có thể quản lý thông tin sản phẩm, nhân viên và các hoạt động kinh doanh khác.</p>
+            <p class="lead">Đây là trang chủ của hệ thống, nơi bạn có thể quản lý thông tin sản phẩm, đơn hàng và các hoạt động kinh doanh khác.</p>
 <div class="container-fluid pt-4 px-4">
     <div class="row g-4">
         <div class="col-sm-6 col-xl-3">
@@ -63,12 +63,12 @@
             <table class="table text-start align-middle table-bordered table-hover mb-0">
                 <thead>
                     <tr class="text-dark">
-                        <th scope="col"><input class="form-check-input" type="checkbox"></th>
-                        <th scope="col" onclick="sortTable(1)">Ngày bán</th>
-                        <th scope="col" onclick="sortTable(2)">Mã đơn</th>
-                        <th scope="col" onclick="sortTable(3)">Mã khách hàng</th>
-                        <th scope="col" onclick="sortTable(4)">Tổng tiền</th>
-                        <th scope="col" onclick="sortTable(5)">Trạng thái</th>
+                        
+                        <th scope="col" >Ngày bán</th>
+                        <th scope="col" >Mã đơn</th>
+                        <th scope="col">Mã khách hàng</th>
+                        <th scope="col">Tổng tiền</th>
+                        <th scope="col">Trạng thái</th>
                         <th scope="col">Thao tác</th>
                     </tr>
                 </thead>
@@ -78,7 +78,7 @@
                         foreach (var item in Model)
                         {
                             <tr>
-                                <td><input class="form-check-input" type="checkbox"></td>
+                                
                                 <td>@item.NgayBan.ToString("dd MMM yyyy")</td>
                                 <td>@item.MaDon</td>
                                 <td>@item.MaKhach</td>

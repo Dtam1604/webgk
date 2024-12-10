@@ -13,21 +13,17 @@
             </div>
         </form>
     </div>
-    <div class="dropdown d-inline">
-        <button class="btn btn-primary btn-sm dropdown-toggle" type="button" id="sort-dropdown" data-bs-toggle="dropdown" aria-expanded="false">
-            Sắp xếp
-        </button>
-        <ul class="dropdown-menu" aria-labelledby="sort-dropdown">
-            <li><a class="dropdown-item" href="#" id="sort-name">Theo tên</a></li>
-        </ul>
-    </div>
 </div>
 <div id="customer-list">
     <table class="table table-bordered table-hover mb-0">
         <thead>
             <tr>
                 <th>Mã khách</th>
-                <th>Tên khách hàng</th>
+                <th>
+                    Tên khách hàng
+                    <button class="btn btn-success btn-sm" onclick="sort('tenKhach', 'asc')">↓</button>
+                    <button class="btn btn-success btn-sm" onclick="sort('tenKhach', 'des')">↑</button>
+                </th>
                 <th>Địa chỉ</th>
                 <th>Số điện thoại</th>
                 <th>Email</th>
@@ -39,8 +35,7 @@
 </div>
 
 <style>
-    table th,
-    table td {
+    table th, table td {
         text-align: center;
         vertical-align: middle;
     }
@@ -64,16 +59,16 @@
             if (customer && customer.maKhach && customer.tenKhach) {
                 const customerItem = document.createElement('tr');
                 customerItem.innerHTML = `
-                            <td>${customer.maKhach}</td>
-                            <td>${customer.tenKhach}</td>
-                            <td>${customer.diaChi || ''}</td>
-                            <td>${customer.sdt || ''}</td>
-                            <td>${customer.email || ''}</td>
-                            <td>
-                                <button class="btn btn-warning btn-sm" onclick="editCustomer('${customer.maKhach}')">Chỉnh sửa</button>
-                                <button class="btn btn-danger btn-sm" onclick="deleteCustomer('${customer.maKhach}')">Xóa</button>
-                            </td>
-                        `;
+                        <td>${customer.maKhach}</td>
+                        <td>${customer.tenKhach}</td>
+                        <td>${customer.diaChi || ''}</td>
+                        <td>${customer.sdt || ''}</td>
+                        <td>${customer.email || ''}</td>
+                        <td>
+                            <button class="btn btn-warning btn-sm" onclick="editCustomer('${customer.maKhach}')">Chỉnh sửa</button>
+                            <button class="btn btn-danger btn-sm" onclick="deleteCustomer('${customer.maKhach}')">Xóa</button>
+                        </td>
+                    `;
                 customerListContainer.appendChild(customerItem);
             } else {
                 console.error('Invalid customer data:', customer);
@@ -111,17 +106,25 @@
         }
     }
 
-    // Sort by name
-    document.getElementById('sort-name').addEventListener('click', function () {
+    function sort(sort_field, sort_type) {
         customers.sort((a, b) => {
-            if (a.tenKhach < b.tenKhach) return -1;
-            if (a.tenKhach > b.tenKhach) return 1;
-            return 0;
+            if (typeof a[sort_field] === 'string') {
+                if (sort_type === "des") {
+                    return b[sort_field].toLowerCase().localeCompare(a[sort_field].toLowerCase());
+                } else {
+                    return a[sort_field].toLowerCase().localeCompare(b[sort_field].toLowerCase());
+                }
+            } else {
+                if (sort_type === "des") {
+                    return b[sort_field] - a[sort_field];
+                } else {
+                    return a[sort_field] - b[sort_field];
+                }
+            }
         });
         displayCustomers(customers);
-    });
+    }
 
-    // Search customers
     function searchCustomers() {
         const searchTerm = document.getElementById('search-input').value.toLowerCase();
         const filteredCustomers = customers.filter(customer =>

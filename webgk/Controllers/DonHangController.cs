@@ -93,4 +93,5 @@ public class DonHangController : Controller
         ViewBag.SanPhams = _context.SanPhams.ToList();
         ViewBag.KhachHangs = _context.KhachHangs.ToList();
     }
+    
 }
